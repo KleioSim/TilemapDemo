@@ -1,19 +1,22 @@
-[gd_scene load_steps=3 format=3 uid="uid://bju2jg4q4lii5"]
+[gd_scene load_steps=4 format=3 uid="uid://bju2jg4q4lii5"]
 
 [ext_resource type="TileSet" uid="uid://c3muid5b4cxhs" path="res://tiesets1024.tres" id="1_wj3ft"]
+[ext_resource type="Script" path="res://TilemapTest.cs" id="1_xqbgv"]
 [ext_resource type="TileSet" uid="uid://dtovgdf6kws51" path="res://tilesets16.tres" id="2_rvedg"]
 
 [node name="Node2D" type="Node2D"]
+script = ExtResource("1_xqbgv")
 
 [node name="TileMap" type="TileMap" parent="."]
 modulate = Color(1, 1, 1, 0.25098)
 tile_set = ExtResource("1_wj3ft")
 format = 2
-layer_0/tile_data = PackedInt32Array(0, 2, 0)
+layer_0/tile_data = PackedInt32Array(0, 0, 0, -1, 1, 0, -65536, 2, 0, 65535, 3, 0, -65535, 200, 0)
 
 [node name="TileMap2" type="TileMap" parent="."]
 tile_set = ExtResource("2_rvedg")
 format = 2
-layer_0/tile_data = PackedInt32Array(0, 2, 0, 1, 2, 0, 65536, 2, 0, 65538, 2, 0)
+layer_0/tile_data = PackedInt32Array(0, 2, 0, 1, 2, 0, 65536, 2, 0, 65538, 2, 0, 2, 0, 0, 65537, 1, 0, 131073, 1, 0, 131074, 3, 0, 131072, 4, 0)
 
 [node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(0.1, 0.1)

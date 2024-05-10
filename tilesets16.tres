@@ -8,9 +8,11 @@
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_sri4k"]
 texture = ExtResource("1_we63n")
+0:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_am3py"]
 texture = ExtResource("2_qpm6c")
+0:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vty65"]
 texture = ExtResource("3_mirad")
@@ -18,9 +20,11 @@ texture = ExtResource("3_mirad")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_1wvy0"]
 texture = ExtResource("4_p8bl8")
+0:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qpgg2"]
 texture = ExtResource("5_cyb3q")
+0:0/0 = 0
 
 [resource]
 sources/0 = SubResource("TileSetAtlasSource_sri4k")
