@@ -1,0 +1,38 @@
+[gd_resource type="TileSet" load_steps=11 format=3 uid="uid://c3muid5b4cxhs"]
+
+[ext_resource type="Texture2D" uid="uid://cd6hqk5gbpyrp" path="res://blue1024.png" id="1_vm88d"]
+[ext_resource type="Texture2D" uid="uid://c737umvrw7ht4" path="res://brown1024.png" id="2_epyyr"]
+[ext_resource type="Texture2D" uid="uid://ckxabien6meab" path="res://green1024.png" id="3_w0k27"]
+[ext_resource type="Texture2D" uid="uid://cn25b55qylfis" path="res://yellow1024.png" id="4_c167o"]
+[ext_resource type="Texture2D" uid="uid://dmkp72iogtg03" path="res://purple1024.png" id="5_wtb7o"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_e8tm4"]
+texture = ExtResource("1_vm88d")
+texture_region_size = Vector2i(1024, 1024)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5g0ri"]
+texture = ExtResource("2_epyyr")
+texture_region_size = Vector2i(1024, 1024)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_755bx"]
+texture = ExtResource("3_w0k27")
+texture_region_size = Vector2i(1024, 1024)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ikboa"]
+texture = ExtResource("4_c167o")
+texture_region_size = Vector2i(1024, 1024)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_upjfi"]
+texture = ExtResource("5_wtb7o")
+texture_region_size = Vector2i(1024, 1024)
+0:0/0 = 0
+
+[resource]
+tile_size = Vector2i(1024, 1024)
+sources/0 = SubResource("TileSetAtlasSource_e8tm4")
+sources/1 = SubResource("TileSetAtlasSource_5g0ri")
+sources/2 = SubResource("TileSetAtlasSource_755bx")
+sources/3 = SubResource("TileSetAtlasSource_ikboa")
+sources/4 = SubResource("TileSetAtlasSource_upjfi")

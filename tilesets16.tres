@@ -1,0 +1,30 @@
+[gd_resource type="TileSet" load_steps=11 format=3 uid="uid://dtovgdf6kws51"]
+
+[ext_resource type="Texture2D" uid="uid://2miy2iai84iv" path="res://blue16.png" id="1_we63n"]
+[ext_resource type="Texture2D" uid="uid://078okf03k48l" path="res://brown16.png" id="2_qpm6c"]
+[ext_resource type="Texture2D" uid="uid://du3ewgaf14o1k" path="res://green16.png" id="3_mirad"]
+[ext_resource type="Texture2D" uid="uid://co25ndoa5uk68" path="res://purple16.png" id="4_p8bl8"]
+[ext_resource type="Texture2D" uid="uid://bq84rgd1b3gy1" path="res://yellow16.png" id="5_cyb3q"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_sri4k"]
+texture = ExtResource("1_we63n")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_am3py"]
+texture = ExtResource("2_qpm6c")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vty65"]
+texture = ExtResource("3_mirad")
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_1wvy0"]
+texture = ExtResource("4_p8bl8")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qpgg2"]
+texture = ExtResource("5_cyb3q")
+
+[resource]
+sources/0 = SubResource("TileSetAtlasSource_sri4k")
+sources/1 = SubResource("TileSetAtlasSource_am3py")
+sources/2 = SubResource("TileSetAtlasSource_vty65")
+sources/3 = SubResource("TileSetAtlasSource_1wvy0")
+sources/4 = SubResource("TileSetAtlasSource_qpgg2")
