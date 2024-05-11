@@ -33,7 +33,7 @@ public partial class TilemapTest : Control
                 }
             }
 
-            var edgeIndexs = TerrainMap.GetUsedCells(0).Where(index =>
+            var edgeIndex2Factor = TerrainMap.GetUsedCells(0).Where(index =>
             {
                 int id = TerrainMap.GetCellSourceId(0, index);
                 if (id == 3)
@@ -43,15 +43,42 @@ public partial class TilemapTest : Control
 
                 var neighborDict = GetNeighborCells(index);
                 return neighborDict.Values.Any(x => TerrainMap.GetCellSourceId(0, x) == 3);
-            });
+            }).ToDictionary(x => x, _ => 1);
 
-            foreach (var index in edgeIndexs)
+            for (int i = 0; i < 10; i++)
             {
-                if (random.Next(0, 100) >= 50)
+                var eraseIndexs = new HashSet<Vector2I>();
+                foreach (var index in edgeIndex2Factor.Keys)
                 {
+                    var factor = edgeIndex2Factor[index];
+
+                    if (random.Next(0, 100) <= 50 / factor)
+                    {
+                        eraseIndexs.Add(index);
+                    }
+                }
+
+                foreach (var index in eraseIndexs)
+                {
+                    edgeIndex2Factor.Remove(index);
                     TerrainMap.EraseCell(0, index);
                 }
+
+                foreach (var key in edgeIndex2Factor.Keys)
+                {
+                    edgeIndex2Factor[key]++;
+                }
+
+                foreach (var index in eraseIndexs)
+                {
+                    var neighbors = GetNeighborCells(index).Values.Where(x => TerrainMap.GetCellSourceId(0, x) != -1);
+                    foreach (var neighbor in neighbors)
+                    {
+                        edgeIndex2Factor.TryAdd(neighbor, 1);
+                    }
+                }
             }
+
         };
     }
 
