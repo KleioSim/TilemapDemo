@@ -11,7 +11,9 @@ config_version=5
 [application]
 
 config/name="TilemapDemo"
-config/features=PackedStringArray("4.2", "Forward Plus")
+run/main_scene="res://test2.tscn"
+config/features=PackedStringArray("4.2", "C#", "Forward Plus")
+boot_splash/show_image=false
 config/icon="res://icon.svg"
 
 [dotnet]

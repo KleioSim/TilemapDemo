@@ -1,79 +1,63 @@
 ﻿using Godot;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
-public partial class TilemapTest : Node2D
+public partial class TilemapTest : Control
 {
-    public TileMap Tilemap => GetNode<TileMap>("TileMap");
+    public Button button => GetNode<Button>("CanvasLayer/Button");
+    public TileMapBase BaseMap => GetNode<TileMapBase>("CanvasLayer2/TileMapBase");
+    public TileMapTerrain TerrainMap => GetNode<TileMapTerrain>("CanvasLayer2/TileMapTerrain");
+
+    private Random random = new Random();
 
     public override void _Ready()
     {
-        Tilemap.Clear();
-
-        var maxSize = 4;
-
-        for (int i = 0; i < maxSize; i++)
+        button.Pressed += () =>
         {
-            for (int j = 0; j < maxSize; j++)
+            //BaseMap.GenerateMap();
+
+            var cellIndexs = BaseMap.GetUsedCells(0);
+
+            int n = 64;
+            foreach (var index in cellIndexs)
             {
-                Tilemap.SetCell(0, new Vector2I(i, j), 0, new Vector2I(0, 0), 0);
-            }
-        }
-
-        var point = new Vector2I(0, maxSize - 1);
-
-        for (int i = 0; i < maxSize; i++)
-        {
-            Tilemap.SetCell(0, new Vector2I(Math.Abs(point.X - i), point.Y), 3, new Vector2I(0, 0), 0);
-            Tilemap.SetCell(0, new Vector2I(point.X, Math.Abs(point.Y - i)), 3, new Vector2I(0, 0), 0);
-        }
-
-
-        var peerpoint = new Vector2I(maxSize - 1 - point.X, maxSize - 1 - point.Y);
-        Tilemap.SetCell(0, peerpoint, 1, new Vector2I(0, 0), 0);
-
-        for (int i = 0; i < maxSize - 3; i++)
-        {
-            var next = new Vector2I(Math.Abs(peerpoint.X - i), peerpoint.Y);
-            if (Tilemap.GetCellSourceId(0, next) == 0)
-            {
-                Tilemap.SetCell(0, next, 1, new Vector2I(0, 0), 0);
-            }
-        }
-
-        for (int i = 0; i < maxSize - 2; i++)
-        {
-            var next = new Vector2I(peerpoint.X, Math.Abs(peerpoint.Y - i));
-            if (Tilemap.GetCellSourceId(0, next) == 0)
-            {
-                Tilemap.SetCell(0, next, 1, new Vector2I(0, 0), 0);
-            }
-        }
-
-        for (int i = 0; i < maxSize; i++)
-        {
-            var next = new Vector2I(i, maxSize - 1);
-            if (Tilemap.GetCellSourceId(0, next) == 0)
-            {
-                Tilemap.SetCell(0, next, 2, new Vector2I(0, 0), 0);
+                int id = BaseMap.GetCellSourceId(0, index);
+                for (int x = index.X * n; x < (index.X + 1) * n; x++)
+                {
+                    for (int y = index.Y * n; y < (index.Y + 1) * n; y++)
+                    {
+                        TerrainMap.SetCell(0, new Vector2I(x, y), id, new Vector2I(0, 0), 0);
+                    }
+                }
             }
 
-            next = new Vector2I(maxSize - 1, i);
-            if (Tilemap.GetCellSourceId(0, next) == 0)
+            var edgeIndexs = TerrainMap.GetUsedCells(0).Where(index =>
             {
-                Tilemap.SetCell(0, next, 2, new Vector2I(0, 0), 0);
-            }
+                int id = TerrainMap.GetCellSourceId(0, index);
+                if (id == 3)
+                {
+                    return false;
+                }
 
-            next = new Vector2I(i, 0);
-            if (Tilemap.GetCellSourceId(0, next) == 0)
-            {
-                Tilemap.SetCell(0, next, 2, new Vector2I(0, 0), 0);
-            }
+                var neighborDict = GetNeighborCells(index);
+                return neighborDict.Values.Any(x => TerrainMap.GetCellSourceId(0, x) == 3);
+            });
 
-            next = new Vector2I(0, i);
-            if (Tilemap.GetCellSourceId(0, next) == 0)
+            foreach (var index in edgeIndexs)
             {
-                Tilemap.SetCell(0, next, 2, new Vector2I(0, 0), 0);
+                if (random.Next(0, 100) >= 50)
+                {
+                    TerrainMap.EraseCell(0, index);
+                }
             }
-        }
+        };
+    }
+
+    private Dictionary<TileSet.CellNeighbor, Vector2I> GetNeighborCells(Vector2I index)
+    {
+        var directs = new[] { TileSet.CellNeighbor.TopSide, TileSet.CellNeighbor.LeftSide, TileSet.CellNeighbor.BottomSide, TileSet.CellNeighbor.RightSide };
+        return directs.ToDictionary(x => x, x => TerrainMap.GetNeighborCell(index, x));
     }
 }
