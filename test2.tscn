@@ -27,18 +27,20 @@ text = "99999"
 follow_viewport_enabled = true
 
 [node name="TileMapBase" type="TileMap" parent="CanvasLayer2"]
-modulate = Color(1, 1, 1, 0.0784314)
+visible = false
+modulate = Color(1, 1, 1, 0.0392157)
 tile_set = ExtResource("1_0hmtj")
 format = 2
 layer_0/tile_data = PackedInt32Array(0, 3, 0, 1, 0, 0)
 script = ExtResource("2_ynbt6")
 
 [node name="TileMapTerrain" type="TileMap" parent="CanvasLayer2"]
-modulate = Color(1, 1, 1, 0.0784314)
+modulate = Color(1, 1, 1, 0.0392157)
 tile_set = ExtResource("4_npods")
 format = 2
 layer_0/tile_data = PackedInt32Array(0, 0, 0, 1, 1, 0, 2, 2, 0)
 script = ExtResource("4_q1gv4")
 
 [node name="Camera2D" type="Camera2D" parent="CanvasLayer2"]
-zoom = Vector2(0.5, 0.5)
+offset = Vector2(500, 500)
+zoom = Vector2(0.1, 0.1)

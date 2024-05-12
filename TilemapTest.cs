@@ -16,7 +16,7 @@ public partial class TilemapTest : Control
     {
         button.Pressed += () =>
         {
-            //BaseMap.GenerateMap();
+            BaseMap.GenerateMap();
 
             var cellIndexs = BaseMap.GetUsedCells(0);
 
@@ -45,7 +45,10 @@ public partial class TilemapTest : Control
                 return neighborDict.Values.Any(x => TerrainMap.GetCellSourceId(0, x) == 3);
             }).ToDictionary(x => x, _ => 1);
 
-            for (int i = 0; i < 10; i++)
+            var eraserCount = 0;
+            var gCount = TerrainMap.GetUsedCellsById(0, 0).Count();
+            int turn = 0;
+            while (eraserCount * 100 / gCount < 50)
             {
                 var eraseIndexs = new HashSet<Vector2I>();
                 foreach (var index in edgeIndex2Factor.Keys)
@@ -62,21 +65,24 @@ public partial class TilemapTest : Control
                 {
                     edgeIndex2Factor.Remove(index);
                     TerrainMap.EraseCell(0, index);
+                    eraserCount++;
                 }
 
                 foreach (var key in edgeIndex2Factor.Keys)
                 {
-                    edgeIndex2Factor[key]++;
+                    edgeIndex2Factor[key]+=(10- turn) * (10 - turn);
                 }
 
                 foreach (var index in eraseIndexs)
                 {
-                    var neighbors = GetNeighborCells(index).Values.Where(x => TerrainMap.GetCellSourceId(0, x) != -1);
+                    var neighbors = GetNeighborCells(index).Values.Where(x => TerrainMap.GetCellSourceId(0, x) != -1 && TerrainMap.GetCellSourceId(0, x) != 3);
                     foreach (var neighbor in neighbors)
                     {
                         edgeIndex2Factor.TryAdd(neighbor, 1);
                     }
                 }
+
+                turn++;
             }
 
         };
