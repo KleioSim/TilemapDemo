@@ -7,8 +7,8 @@ using System.Reflection;
 public partial class TilemapTest : Control
 {
     public Button button => GetNode<Button>("CanvasLayer/Button");
-    public TileMapBase BaseMap => GetNode<TileMapBase>("CanvasLayer2/TileMapBase");
-    public TileMapTerrain TerrainMap => GetNode<TileMapTerrain>("CanvasLayer2/TileMapTerrain");
+    public TileMapBase BaseMap => GetNode<TileMapBase>("CanvasLayer2/TileMap2048");
+    public TileMapTerrain TerrainMap => GetNode<TileMapTerrain>("CanvasLayer2/TileMap128");
 
     private Random random = new Random();
 
@@ -20,7 +20,7 @@ public partial class TilemapTest : Control
 
             var cellIndexs = BaseMap.GetUsedCells(0);
 
-            int n = 64;
+            int n = 2048 / 128;
             foreach (var index in cellIndexs)
             {
                 int id = BaseMap.GetCellSourceId(0, index);
@@ -47,7 +47,7 @@ public partial class TilemapTest : Control
 
             var eraserCount = 0;
             var gCount = TerrainMap.GetUsedCellsById(0, 0).Count();
-            int turn = 0;
+            int turn = 1;
             while (eraserCount * 100 / gCount < 50)
             {
                 var eraseIndexs = new HashSet<Vector2I>();
@@ -70,7 +70,7 @@ public partial class TilemapTest : Control
 
                 foreach (var key in edgeIndex2Factor.Keys)
                 {
-                    edgeIndex2Factor[key]+=(10- turn) * (10 - turn);
+                    edgeIndex2Factor[key] *=2;
                 }
 
                 foreach (var index in eraseIndexs)
