@@ -3,11 +3,13 @@ using System;
 
 public partial class TileMapBase : TileMap
 {
-    private Random random = new Random();
+    private Random random;
 
 
     public void GenerateMap()
     {
+        random = new Random(123);
+
         this.Clear();
 
         var randomValue = random.Next();

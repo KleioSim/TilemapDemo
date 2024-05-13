@@ -9,7 +9,7 @@ public partial class TileMapTerrain : TileMap
 
     internal void GenerateMap(TileMap baseMap)
     {
-        random = new Random();
+        random = new Random(123);
 
         var cellIndexs = baseMap.GetUsedCells(0);
 
