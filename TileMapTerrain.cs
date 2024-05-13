@@ -13,12 +13,13 @@ public partial class TileMapTerrain : TileMap
 
         FullFillByBase(baseMap, cellIndexs);
 
-        FlushLandEdge(random);
+        var egdeIndexs = FlushLandEdge(random);
 
-        RemoveSmallLandBlock();
+        var removedIndexs = RemoveSmallLandBlock(egdeIndexs);
+
     }
 
-    private void FlushLandEdge(Random random)
+    private IEnumerable<Vector2I> FlushLandEdge(Random random)
     {
         var edgeIndex2Factor = GetUsedCells(0).Where(index =>
         {
@@ -71,6 +72,8 @@ public partial class TileMapTerrain : TileMap
 
             turn++;
         }
+
+        return edgeIndex2Factor.Keys;
     }
 
     private void FullFillByBase(TileMap baseMap, Godot.Collections.Array<Vector2I> cellIndexs)
@@ -89,11 +92,11 @@ public partial class TileMapTerrain : TileMap
         }
     }
 
-    private void RemoveSmallLandBlock()
+    private IEnumerable<Vector2I> RemoveSmallLandBlock(IEnumerable<Vector2I> indexs)
     {
         var groups = new List<(HashSet<Vector2I> live, HashSet<Vector2I> ulive)>();
 
-        var landCells = new Stack<Vector2I>(GetUsedCells(0).Where(x => GetCellSourceId(0, x) != 3));
+        var landCells = new Stack<Vector2I>(indexs);
         while (landCells.Count > 0)
         {
             var currIndex = landCells.Pop();
@@ -131,10 +134,13 @@ public partial class TileMapTerrain : TileMap
         var maxItemCountGroup = groups.MaxBy(x => x.ulive.Count + x.live.Count);
         groups.Remove(maxItemCountGroup);
 
-        foreach (var index in groups.SelectMany(x => x.ulive.Concat(x.live)))
+        var needRemoveIndexs = groups.SelectMany(x => x.ulive.Concat(x.live));
+        foreach (var index in needRemoveIndexs)
         {
             SetCell(0, index, 3, Vector2I.Zero, 0);
         }
+
+        return needRemoveIndexs;
     }
 
     private Dictionary<TileSet.CellNeighbor, Vector2I> GetNeighborCells(Vector2I index)
