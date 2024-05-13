@@ -1,14 +1,16 @@
 ﻿using Godot;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 public partial class TileMapBase : TileMap
 {
     private Random random;
 
 
-    public void GenerateMap()
+    public Vector2I GenerateMap()
     {
-        random = new Random(123);
+        random = new Random();
 
         this.Clear();
 
@@ -83,5 +85,7 @@ public partial class TileMapBase : TileMap
                 this.SetCell(0, next, 2, new Vector2I(0, 0), 0);
             }
         }
+
+        return bpoint/(maxSize-1);
     }
 }

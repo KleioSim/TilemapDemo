@@ -7,31 +7,31 @@ public partial class TileMapTerrain : TileMap
 {
     private Random random;
 
-    internal void GenerateMap(TileMap baseMap)
+    internal void GenerateMap(TileMap baseMap, Vector2I bpoint)
     {
-        random = new Random(123);
+        random = new Random();
 
-        var cellIndexs = baseMap.GetUsedCells(0);
-
-        FullFillByBase(baseMap, cellIndexs);
+        FullFillByBase(baseMap);
 
         var egdeIndexs = FlushLandEdge();
 
-        var removedIndexs = RemoveSmallLandBlock(egdeIndexs);
+        var removedIndexs = RemoveSmallLandBlock();
 
-        RebuildLandEdge(egdeIndexs.Except(removedIndexs), removedIndexs);
+        RebuildLandEdge(egdeIndexs.Except(removedIndexs), removedIndexs, bpoint*GetUsedCells(0).Select(x=>x.X).Max());
 
+        var indexs = GetUsedCells(0);
+        GD.Print($"total cell count{indexs.Count()}, water cell count {indexs.Count(x => GetCellSourceId(0, x) == 3)}");
     }
 
-    private void RebuildLandEdge(IEnumerable<Vector2I> edgeIndexs, IEnumerable<Vector2I> removedIndexs)
+    private void RebuildLandEdge(IEnumerable<Vector2I> edgeIndexs, IEnumerable<Vector2I> removedIndexs, Vector2I bpoint)
     {
-        var hashSetEdgeIndexs = edgeIndexs.ToHashSet();
+        var orderList = edgeIndexs.OrderBy(x=>(bpoint - x).LengthSquared()).ToList();
 
         for (int i = 0; i < removedIndexs.Count(); i++)
         {
-            var randomValue = random.Next(0, hashSetEdgeIndexs.Count() - 1);
+            var index = random.Next(0, orderList.Count() - 1) / random.Next(1, 100);
 
-            var currIndex = hashSetEdgeIndexs.ElementAt(randomValue);
+            var currIndex = orderList.ElementAt(index);
 
             var perfers = GetNeighborCells(currIndex).Values.Where(x => GetCellSourceId(0, x) == 3).ToArray();
             if (perfers.Length == 0)
@@ -39,16 +39,21 @@ public partial class TileMapTerrain : TileMap
                 throw new Exception();
             }
 
-            var perfer = perfers[randomValue % perfers.Length];
+            var perfer = perfers[index % perfers.Length];
             SetCell(0, perfer, GetCellSourceId(0, currIndex), new Vector2I(0, 0), 0);
 
-            hashSetEdgeIndexs.Add(perfer);
+            orderList.Add(perfer);
 
             var ulives = GetNeighborCells(perfer).Values.Append(perfer)
               .Where(x => GetNeighborCells(x).Values.All(x => GetCellSourceId(0, x) != 3))
               .ToArray();
 
-            hashSetEdgeIndexs.ExceptWith(ulives);
+            foreach(var ulive in ulives)
+            {
+                orderList.Remove(ulive);
+            }
+
+            orderList = edgeIndexs.OrderBy(x => (bpoint - x).LengthSquared()).ToList();
 
         }
     }
@@ -77,7 +82,7 @@ public partial class TileMapTerrain : TileMap
             {
                 var factor = edgeIndex2Factor[index];
 
-                if (random.Next(0, 100) <= 50 / factor)
+                if ( random.Next(0, 1000) <= 300 / factor)
                 {
                     eraseIndexs.Add(index);
                 }
@@ -92,7 +97,7 @@ public partial class TileMapTerrain : TileMap
 
             foreach (var key in edgeIndex2Factor.Keys)
             {
-                edgeIndex2Factor[key] *= 2;
+                edgeIndex2Factor[key] += 10;
             }
 
             foreach (var index in eraseIndexs)
@@ -110,10 +115,10 @@ public partial class TileMapTerrain : TileMap
         return edgeIndex2Factor.Keys;
     }
 
-    private void FullFillByBase(TileMap baseMap, Godot.Collections.Array<Vector2I> cellIndexs)
+    private void FullFillByBase(TileMap baseMap)
     {
-        int n = 2048 / 128;
-        foreach (var index in cellIndexs)
+        int n = 512 / 128;
+        foreach (var index in baseMap.GetUsedCells(0))
         {
             int id = baseMap.GetCellSourceId(0, index);
             for (int x = index.X * n; x < (index.X + 1) * n; x++)
@@ -126,16 +131,16 @@ public partial class TileMapTerrain : TileMap
         }
     }
 
-    private IEnumerable<Vector2I> RemoveSmallLandBlock(IEnumerable<Vector2I> indexs)
+    private IEnumerable<Vector2I> RemoveSmallLandBlock()
     {
         var groups = new List<(HashSet<Vector2I> live, HashSet<Vector2I> ulive)>();
 
-        var landCells = new Stack<Vector2I>(indexs);
+        var landCells = new Stack<Vector2I>(GetUsedCells(0).Where(x=>GetCellSourceId(0,x) != 3));
         while (landCells.Count > 0)
         {
             var currIndex = landCells.Pop();
 
-            var inGroups = groups.Where(group => group.live.Any(item => GetNeighborCells(item).Values.Contains(currIndex)))
+            var inGroups = groups.Where(group => group.live.Any(item => this.GetNeighborCells(item).Values.Contains(currIndex)))
                 .OrderByDescending(x => x.live.Count + x.ulive.Count)
                 .ToArray();
 
@@ -147,9 +152,9 @@ public partial class TileMapTerrain : TileMap
             {
                 inGroups[0].live.Add(currIndex);
 
-                var ulivesNew = GetNeighborCells(currIndex).Values.Where(x => inGroups[0].live.Contains(x))
+                var ulivesNew = this.GetNeighborCells(currIndex).Values.Where(x => inGroups[0].live.Contains(x))
                     .Append(currIndex)
-                    .Where(index => !GetNeighborCells(index).Values.Except(inGroups[0].live).Any())
+                    .Where(index => !this.GetNeighborCells(index).Values.Except(inGroups[0].live).Any())
                     .ToArray();
 
                 inGroups[0].live.ExceptWith(ulivesNew);
@@ -181,5 +186,23 @@ public partial class TileMapTerrain : TileMap
     {
         var directs = new[] { TileSet.CellNeighbor.TopSide, TileSet.CellNeighbor.LeftSide, TileSet.CellNeighbor.BottomSide, TileSet.CellNeighbor.RightSide };
         return directs.ToDictionary(x => x, x => GetNeighborCell(index, x));
+    }
+}
+
+public static class TileMapExtension
+{
+    public static Dictionary<TileSet.CellNeighbor, Vector2I> GetNeighborCells(this TileMap tilemap, Vector2I index)
+    {
+        //var dict = Enum.GetValues<TileSet.CellNeighbor>().ToDictionary(x => x, x => tilemap.GetNeighborCell(Vector2I.Zero, x));
+        var directs = new[] { 
+            TileSet.CellNeighbor.TopSide, 
+            TileSet.CellNeighbor.TopLeftCorner, 
+            TileSet.CellNeighbor.LeftSide, 
+            TileSet.CellNeighbor.BottomLeftCorner, 
+            TileSet.CellNeighbor.BottomSide,
+            TileSet.CellNeighbor.BottomRightCorner,
+            TileSet.CellNeighbor.RightSide,
+            TileSet.CellNeighbor.TopRightCorner,};
+        return directs.ToDictionary(x => x, x => tilemap.GetNeighborCell(index, x));
     }
 }
