@@ -11,19 +11,15 @@ public partial class TileMapTerrain : TileMap
 
         var cellIndexs = baseMap.GetUsedCells(0);
 
-        int n = 2048 / 128;
-        foreach (var index in cellIndexs)
-        {
-            int id = baseMap.GetCellSourceId(0, index);
-            for (int x = index.X * n; x < (index.X + 1) * n; x++)
-            {
-                for (int y = index.Y * n; y < (index.Y + 1) * n; y++)
-                {
-                    SetCell(0, new Vector2I(x, y), id, new Vector2I(0, 0), 0);
-                }
-            }
-        }
+        FullFillByBase(baseMap, cellIndexs);
 
+        FlushLandEdge(random);
+
+        RemoveSmallLandBlock();
+    }
+
+    private void FlushLandEdge(Random random)
+    {
         var edgeIndex2Factor = GetUsedCells(0).Where(index =>
         {
             int id = GetCellSourceId(0, index);
@@ -75,7 +71,26 @@ public partial class TileMapTerrain : TileMap
 
             turn++;
         }
+    }
 
+    private void FullFillByBase(TileMap baseMap, Godot.Collections.Array<Vector2I> cellIndexs)
+    {
+        int n = 2048 / 128;
+        foreach (var index in cellIndexs)
+        {
+            int id = baseMap.GetCellSourceId(0, index);
+            for (int x = index.X * n; x < (index.X + 1) * n; x++)
+            {
+                for (int y = index.Y * n; y < (index.Y + 1) * n; y++)
+                {
+                    SetCell(0, new Vector2I(x, y), id, new Vector2I(0, 0), 0);
+                }
+            }
+        }
+    }
+
+    private void RemoveSmallLandBlock()
+    {
         var groups = new List<(HashSet<Vector2I> live, HashSet<Vector2I> ulive)>();
 
         var landCells = new Stack<Vector2I>(GetUsedCells(0).Where(x => GetCellSourceId(0, x) != 3));
