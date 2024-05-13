@@ -5,21 +5,55 @@ using System.Linq;
 
 public partial class TileMapTerrain : TileMap
 {
+    private Random random;
+
     internal void GenerateMap(TileMap baseMap)
     {
-        var random = new Random();
+        random = new Random();
 
         var cellIndexs = baseMap.GetUsedCells(0);
 
         FullFillByBase(baseMap, cellIndexs);
 
-        var egdeIndexs = FlushLandEdge(random);
+        var egdeIndexs = FlushLandEdge();
 
         var removedIndexs = RemoveSmallLandBlock(egdeIndexs);
 
+        RebuildLandEdge(egdeIndexs.Except(removedIndexs), removedIndexs);
+
     }
 
-    private IEnumerable<Vector2I> FlushLandEdge(Random random)
+    private void RebuildLandEdge(IEnumerable<Vector2I> edgeIndexs, IEnumerable<Vector2I> removedIndexs)
+    {
+        var hashSetEdgeIndexs = edgeIndexs.ToHashSet();
+
+        for (int i = 0; i < removedIndexs.Count(); i++)
+        {
+            var randomValue = random.Next(0, hashSetEdgeIndexs.Count() - 1);
+
+            var currIndex = hashSetEdgeIndexs.ElementAt(randomValue);
+
+            var perfers = GetNeighborCells(currIndex).Values.Where(x => GetCellSourceId(0, x) == 3).ToArray();
+            if (perfers.Length == 0)
+            {
+                throw new Exception();
+            }
+
+            var perfer = perfers[randomValue % perfers.Length];
+            SetCell(0, perfer, GetCellSourceId(0, currIndex), new Vector2I(0, 0), 0);
+
+            hashSetEdgeIndexs.Add(perfer);
+
+            var ulives = GetNeighborCells(perfer).Values.Append(perfer)
+              .Where(x => GetNeighborCells(x).Values.All(x => GetCellSourceId(0, x) != 3))
+              .ToArray();
+
+            hashSetEdgeIndexs.ExceptWith(ulives);
+
+        }
+    }
+
+    private IEnumerable<Vector2I> FlushLandEdge()
     {
         var edgeIndex2Factor = GetUsedCells(0).Where(index =>
         {
