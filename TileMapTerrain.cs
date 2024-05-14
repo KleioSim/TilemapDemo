@@ -28,7 +28,11 @@ public partial class TileMapTerrain : TileMap
 
     private void ChangeMountionEdge2Hill()
     {
-        var edgeIndex2Factor = GetUsedCellsById(0, 2).Where(index =>
+        var maxValue = GetUsedCells(0).Select(index => index.X).Max();
+
+        var edgeIndex2Factor = GetUsedCellsById(0, 2)
+             .Where(neighbor => neighbor.X != 0 && neighbor.Y != 0 && neighbor.X != maxValue && neighbor.Y != maxValue)
+            .Where(index =>
         {
             var neighborDict = this.GetNeighborCells_4(index);
             return neighborDict.Values.Any(x => GetCellSourceId(0, x) != 2);
@@ -37,14 +41,14 @@ public partial class TileMapTerrain : TileMap
         var eraserCount = 0;
         var gCount = GetUsedCellsById(0, 2).Count();
         int turn = 1;
-        while (eraserCount * 100 / gCount < 20)
+        while (eraserCount * 100 / gCount <50)
         {
             var eraseIndexs = new HashSet<Vector2I>();
             foreach (var index in edgeIndex2Factor.Keys)
             {
                 var factor = edgeIndex2Factor[index];
 
-                if (random.Next(0, 1000) <= 300 / factor)
+                if (random.Next(0, 1000) <= 800 / factor)
                 {
                     eraseIndexs.Add(index);
                 }
@@ -57,16 +61,20 @@ public partial class TileMapTerrain : TileMap
                 eraserCount++;
             }
 
-            foreach (var key in edgeIndex2Factor.Keys)
-            {
-                edgeIndex2Factor[key] *= 1 + this.GetNeighborCells_4(key).Values.Count(x => GetCellSourceId(0, x) == 3);
-            }
-
             foreach (var index in eraseIndexs)
             {
                 var neighbors = this.GetNeighborCells_4(index).Values.Where(x => GetCellSourceId(0, x) == 2);
                 foreach (var neighbor in neighbors)
                 {
+                    if (neighbor.X == 0 || neighbor.Y == 0)
+                    {
+                        continue;
+                    }
+                    if (neighbor.X == maxValue || neighbor.Y == maxValue)
+                    {
+                        continue;
+                    }
+
                     edgeIndex2Factor.TryAdd(neighbor, 1);
                 }
             }
@@ -84,10 +92,14 @@ public partial class TileMapTerrain : TileMap
 
     private void FlushMountionEdge()
     {
-        var edgeIndex2Factor = GetUsedCellsById(0, 2).Where(index =>
+        var maxValue = GetUsedCells(0).Select(index => index.X).Max();
+
+        var edgeIndex2Factor = GetUsedCellsById(0, 2)
+            .Where(neighbor => neighbor.X != 0 && neighbor.Y != 0 && neighbor.X != maxValue && neighbor.Y != maxValue)
+            .Where(index =>
         {
             var neighborDict = this.GetNeighborCells_4(index);
-            return neighborDict.Values.Any(x => GetCellSourceId(0, x) != 2);
+            return neighborDict.Values.Any(neighbor =>  GetCellSourceId(0, neighbor) != 2);
         }).ToDictionary(x => x, _ => 1);
 
         var eraserCount = 0;
@@ -123,6 +135,15 @@ public partial class TileMapTerrain : TileMap
                 var neighbors = this.GetNeighborCells_4(index).Values.Where(x => GetCellSourceId(0, x) == 2);
                 foreach (var neighbor in neighbors)
                 {
+                    if (neighbor.X == 0 || neighbor.Y == 0)
+                    {
+                        continue;
+                    }
+                    if (neighbor.X == maxValue || neighbor.Y == maxValue)
+                    {
+                        continue;
+                    }
+
                     edgeIndex2Factor.TryAdd(neighbor, 1);
                 }
             }
@@ -135,10 +156,22 @@ public partial class TileMapTerrain : TileMap
     {
         var bCellIndexs = GetUsedCellsById(0, 2);
 
+        var maxValue = bCellIndexs.Select(index => index.X).Max();
+
         var selected = new HashSet<Vector2I>();
         while (selected.Count < bCellIndexs.Count * 0.1)
         {
-            selected.Add(bCellIndexs[random.Next(0, bCellIndexs.Count)]);
+            var index = bCellIndexs[random.Next(0, bCellIndexs.Count)];
+            if(index.X == 0 || index.X == maxValue)
+            {
+                continue;
+            }
+            if (index.Y == 0 || index.Y == maxValue)
+            {
+                continue;
+            }
+
+            selected.Add(index);
         }
 
         foreach (var index in selected)
@@ -168,7 +201,7 @@ public partial class TileMapTerrain : TileMap
             }
         }
 
-        for (int i = 0; i < removedIndexs.Count(); i++)
+        for (int i = 0; i < removedIndexs.Count()/2; i++)
         {
             var index = random.Next(0, orderList.Count() - 1) / random.Next(1, 10);
 
