@@ -43,7 +43,7 @@ public partial class TileMap512 : TileMap
                 {
                     var ret = id;
                     var randomValuw = random.Next(0, 100);
-                    if (randomValuw * 100 / 100 <= 20)
+                    if (randomValuw * 100 / 100 <= 10)
                     {
                         ret = 0;
                     }
@@ -53,7 +53,7 @@ public partial class TileMap512 : TileMap
                 {
                     var ret = id;
                     var randomValuw = random.Next(0, 100);
-                    if (randomValuw * 100 / 100 <= 20)
+                    if (randomValuw * 100 / 100 <= 25)
                     {
                         ret = 2;
                     }

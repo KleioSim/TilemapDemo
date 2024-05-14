@@ -13,17 +13,150 @@ public partial class TileMapTerrain : TileMap
 
         FullFillByBase(baseMap);
 
-        var egdeIndexs = FlushLandEdge();
-
-        var removedIndexs = RemoveSmallLandBlock();
-
-        RebuildLandEdge(egdeIndexs.Except(removedIndexs), removedIndexs, bpoint * GetUsedCells(0).Select(x => x.X).Max());
+        BuildLandEdge(bpoint);
+        BuildMountions();
+        BuildHills();
 
         var indexs = GetUsedCells(0);
         GD.Print($"total cell count{indexs.Count()}, water cell count {indexs.Count(x => GetCellSourceId(0, x) == 3)}");
     }
 
-    private void RebuildLandEdge(IEnumerable<Vector2I> edgeIndexs, IEnumerable<Vector2I> removedIndexs, Vector2I bpoint)
+    private void BuildHills()
+    {
+        ChangeMountionEdge2Hill();
+    }
+
+    private void ChangeMountionEdge2Hill()
+    {
+        var edgeIndex2Factor = GetUsedCellsById(0, 2).Where(index =>
+        {
+            var neighborDict = this.GetNeighborCells_4(index);
+            return neighborDict.Values.Any(x => GetCellSourceId(0, x) != 2);
+        }).ToDictionary(x => x, _ => 1);
+
+        var eraserCount = 0;
+        var gCount = GetUsedCellsById(0, 2).Count();
+        int turn = 1;
+        while (eraserCount * 100 / gCount < 20)
+        {
+            var eraseIndexs = new HashSet<Vector2I>();
+            foreach (var index in edgeIndex2Factor.Keys)
+            {
+                var factor = edgeIndex2Factor[index];
+
+                if (random.Next(0, 1000) <= 300 / factor)
+                {
+                    eraseIndexs.Add(index);
+                }
+            }
+
+            foreach (var index in eraseIndexs)
+            {
+                edgeIndex2Factor.Remove(index);
+                SetCell(0, index, 4, Vector2I.Zero, 0);
+                eraserCount++;
+            }
+
+            foreach (var key in edgeIndex2Factor.Keys)
+            {
+                edgeIndex2Factor[key] *= 1 + this.GetNeighborCells_4(key).Values.Count(x => GetCellSourceId(0, x) == 3);
+            }
+
+            foreach (var index in eraseIndexs)
+            {
+                var neighbors = this.GetNeighborCells_4(index).Values.Where(x => GetCellSourceId(0, x) == 2);
+                foreach (var neighbor in neighbors)
+                {
+                    edgeIndex2Factor.TryAdd(neighbor, 1);
+                }
+            }
+
+            turn++;
+        }
+    }
+
+    private void BuildMountions()
+    {
+        GenerateGPointSeed();
+
+        FlushMountionEdge();
+    }
+
+    private void FlushMountionEdge()
+    {
+        var edgeIndex2Factor = GetUsedCellsById(0, 2).Where(index =>
+        {
+            var neighborDict = this.GetNeighborCells_4(index);
+            return neighborDict.Values.Any(x => GetCellSourceId(0, x) != 2);
+        }).ToDictionary(x => x, _ => 1);
+
+        var eraserCount = 0;
+        var gCount = GetUsedCellsById(0, 2).Count();
+        int turn = 1;
+        while (eraserCount * 100 / gCount < 20)
+        {
+            var eraseIndexs = new HashSet<Vector2I>();
+            foreach (var index in edgeIndex2Factor.Keys)
+            {
+                var factor = edgeIndex2Factor[index];
+
+                if (random.Next(0, 1000) <= 300 / factor)
+                {
+                    eraseIndexs.Add(index);
+                }
+            }
+
+            foreach (var index in eraseIndexs)
+            {
+                edgeIndex2Factor.Remove(index);
+                SetCell(0, index, 0, Vector2I.Zero, 0);
+                eraserCount++;
+            }
+
+            foreach (var key in edgeIndex2Factor.Keys)
+            {
+                edgeIndex2Factor[key] *= 3;
+            }
+
+            foreach (var index in eraseIndexs)
+            {
+                var neighbors = this.GetNeighborCells_4(index).Values.Where(x => GetCellSourceId(0, x) == 2);
+                foreach (var neighbor in neighbors)
+                {
+                    edgeIndex2Factor.TryAdd(neighbor, 1);
+                }
+            }
+
+            turn++;
+        }
+    }
+
+    private void GenerateGPointSeed()
+    {
+        var bCellIndexs = GetUsedCellsById(0, 2);
+
+        var selected = new HashSet<Vector2I>();
+        while (selected.Count < bCellIndexs.Count * 0.1)
+        {
+            selected.Add(bCellIndexs[random.Next(0, bCellIndexs.Count)]);
+        }
+
+        foreach (var index in selected)
+        {
+            SetCell(0, index, 0, Vector2I.Zero, 0);
+        }
+    }
+
+    private void BuildLandEdge(Vector2I bpoint)
+    {
+        var egdeIndexs = FlushLandEdge();
+
+        var removedIndexs = RemoveSmallLandBlock();
+
+        FixLandEdge(egdeIndexs.Except(removedIndexs), removedIndexs, bpoint * GetUsedCells(0).Select(x => x.X).Max());
+    }
+
+    private void FixLandEdge(IEnumerable<Vector2I> edgeIndexs, IEnumerable<Vector2I> removedIndexs, Vector2I bpoint)
     {
         var orderList = edgeIndexs.OrderBy(x => (bpoint - x).LengthSquared()).ToList();
         foreach (var item in orderList)
