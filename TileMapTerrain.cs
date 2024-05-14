@@ -159,7 +159,7 @@ public partial class TileMapTerrain : TileMap
         var maxValue = bCellIndexs.Select(index => index.X).Max();
 
         var selected = new HashSet<Vector2I>();
-        while (selected.Count < bCellIndexs.Count * 0.1)
+        while (selected.Count < bCellIndexs.Count * 0.15)
         {
             var index = bCellIndexs[random.Next(0, bCellIndexs.Count)];
             if(index.X == 0 || index.X == maxValue)

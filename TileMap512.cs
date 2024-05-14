@@ -35,7 +35,7 @@ public partial class TileMap512 : TileMap
             {
                 for (int y = index.Y * n; y < (index.Y + 1) * n; y++)
                 {
-                    var percent = isNearbyPurple ? 60 : 30;
+                    var percent = isNearbyPurple ? 70 : 35;
                     SetCell(0, new Vector2I(x, y), random.Next(0, 100) < percent ? 2 : 0, new Vector2I(0, 0), 0);
                 }
             }
