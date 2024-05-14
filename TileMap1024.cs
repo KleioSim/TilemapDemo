@@ -1,4 +1,4 @@
-using Godot;
+﻿using Godot;
 using System;
 using System.Linq;
 
@@ -25,7 +25,7 @@ public partial class TileMap1024 : TileMap
             }
         }
 
-        var newLandCells = GetUsedCellsById(0, 3).Where(cell => this.GetNeighborCells(cell).Values.Any(neighbor => GetCellSourceId(0, neighbor) is not 3 and not -1)).ToArray();
+        var newLandCells = GetUsedCellsById(0, 3).Where(cell => this.GetNeighborCells_8(cell).Values.Any(neighbor => GetCellSourceId(0, neighbor) is not 3 and not -1)).ToArray();
         foreach (var index in newLandCells)
         {
             SetCell(0, index, 0, new Vector2I(0, 0), 0);

@@ -17,7 +17,7 @@ public partial class TileMapTerrain : TileMap
 
         var removedIndexs = RemoveSmallLandBlock();
 
-        RebuildLandEdge(egdeIndexs.Except(removedIndexs), removedIndexs, bpoint*GetUsedCells(0).Select(x=>x.X).Max());
+        RebuildLandEdge(egdeIndexs.Except(removedIndexs), removedIndexs, bpoint * GetUsedCells(0).Select(x => x.X).Max());
 
         var indexs = GetUsedCells(0);
         GD.Print($"total cell count{indexs.Count()}, water cell count {indexs.Count(x => GetCellSourceId(0, x) == 3)}");
@@ -25,15 +25,23 @@ public partial class TileMapTerrain : TileMap
 
     private void RebuildLandEdge(IEnumerable<Vector2I> edgeIndexs, IEnumerable<Vector2I> removedIndexs, Vector2I bpoint)
     {
-        var orderList = edgeIndexs.OrderBy(x=>(bpoint - x).LengthSquared()).ToList();
+        var orderList = edgeIndexs.OrderBy(x => (bpoint - x).LengthSquared()).ToList();
+        foreach (var item in orderList)
+        {
+            var perfers = this.GetNeighborCells_4(item).Values.Where(x => GetCellSourceId(0, x) == 3).ToArray();
+            if (perfers.Length == 0)
+            {
+                throw new Exception();
+            }
+        }
 
         for (int i = 0; i < removedIndexs.Count(); i++)
         {
-            var index = random.Next(0, orderList.Count() - 1) / random.Next(1, 100);
+            var index = random.Next(0, orderList.Count() - 1) / random.Next(1, 10);
 
             var currIndex = orderList.ElementAt(index);
 
-            var perfers = GetNeighborCells(currIndex).Values.Where(x => GetCellSourceId(0, x) == 3).ToArray();
+            var perfers = this.GetNeighborCells_4(currIndex).Values.Where(x => GetCellSourceId(0, x) == 3).ToArray();
             if (perfers.Length == 0)
             {
                 throw new Exception();
@@ -44,16 +52,16 @@ public partial class TileMapTerrain : TileMap
 
             orderList.Add(perfer);
 
-            var ulives = GetNeighborCells(perfer).Values.Append(perfer)
-              .Where(x => GetNeighborCells(x).Values.All(x => GetCellSourceId(0, x) != 3))
+            var ulives = this.GetNeighborCells_4(perfer).Values.Append(perfer)
+              .Where(x => this.GetNeighborCells_4(x).Values.All(x => GetCellSourceId(0, x) != 3))
               .ToArray();
 
-            foreach(var ulive in ulives)
+            foreach (var ulive in ulives)
             {
                 orderList.Remove(ulive);
             }
 
-            orderList = edgeIndexs.OrderBy(x => (bpoint - x).LengthSquared()).ToList();
+            orderList = orderList.OrderBy(x => (bpoint - x).LengthSquared()).ToList();
 
         }
     }
@@ -68,7 +76,7 @@ public partial class TileMapTerrain : TileMap
                 return false;
             }
 
-            var neighborDict = GetNeighborCells(index);
+            var neighborDict = this.GetNeighborCells_4(index);
             return neighborDict.Values.Any(x => GetCellSourceId(0, x) == 3);
         }).ToDictionary(x => x, _ => 1);
 
@@ -82,7 +90,7 @@ public partial class TileMapTerrain : TileMap
             {
                 var factor = edgeIndex2Factor[index];
 
-                if ( random.Next(0, 1000) <= 300 / factor)
+                if (random.Next(0, 1000) <= 300 / factor)
                 {
                     eraseIndexs.Add(index);
                 }
@@ -97,12 +105,12 @@ public partial class TileMapTerrain : TileMap
 
             foreach (var key in edgeIndex2Factor.Keys)
             {
-                edgeIndex2Factor[key] += 10;
+                edgeIndex2Factor[key] *= 3;
             }
 
             foreach (var index in eraseIndexs)
             {
-                var neighbors = GetNeighborCells(index).Values.Where(x => GetCellSourceId(0, x) != -1 && GetCellSourceId(0, x) != 3);
+                var neighbors = this.GetNeighborCells_4(index).Values.Where(x => GetCellSourceId(0, x) != -1 && GetCellSourceId(0, x) != 3);
                 foreach (var neighbor in neighbors)
                 {
                     edgeIndex2Factor.TryAdd(neighbor, 1);
@@ -135,12 +143,12 @@ public partial class TileMapTerrain : TileMap
     {
         var groups = new List<(HashSet<Vector2I> live, HashSet<Vector2I> ulive)>();
 
-        var landCells = new Stack<Vector2I>(GetUsedCells(0).Where(x=>GetCellSourceId(0,x) != 3));
+        var landCells = new Stack<Vector2I>(GetUsedCells(0).Where(x => GetCellSourceId(0, x) != 3));
         while (landCells.Count > 0)
         {
             var currIndex = landCells.Pop();
 
-            var inGroups = groups.Where(group => group.live.Any(item => this.GetNeighborCells(item).Values.Contains(currIndex)))
+            var inGroups = groups.Where(group => group.live.Any(item => this.GetNeighborCells_4(item).Values.Contains(currIndex)))
                 .OrderByDescending(x => x.live.Count + x.ulive.Count)
                 .ToArray();
 
@@ -152,9 +160,9 @@ public partial class TileMapTerrain : TileMap
             {
                 inGroups[0].live.Add(currIndex);
 
-                var ulivesNew = this.GetNeighborCells(currIndex).Values.Where(x => inGroups[0].live.Contains(x))
+                var ulivesNew = this.GetNeighborCells_4(currIndex).Values.Where(x => inGroups[0].live.Contains(x))
                     .Append(currIndex)
-                    .Where(index => !this.GetNeighborCells(index).Values.Except(inGroups[0].live).Any())
+                    .Where(index => !this.GetNeighborCells_4(index).Values.Except(inGroups[0].live).Any())
                     .ToArray();
 
                 inGroups[0].live.ExceptWith(ulivesNew);
@@ -182,27 +190,40 @@ public partial class TileMapTerrain : TileMap
         return needRemoveIndexs;
     }
 
-    private Dictionary<TileSet.CellNeighbor, Vector2I> GetNeighborCells(Vector2I index)
-    {
-        var directs = new[] { TileSet.CellNeighbor.TopSide, TileSet.CellNeighbor.LeftSide, TileSet.CellNeighbor.BottomSide, TileSet.CellNeighbor.RightSide };
-        return directs.ToDictionary(x => x, x => GetNeighborCell(index, x));
-    }
+    //private Dictionary<TileSet.CellNeighbor, Vector2I> GetNeighborCells(Vector2I index)
+    //{
+    //    var directs = new[] { TileSet.CellNeighbor.TopSide, TileSet.CellNeighbor.LeftSide, TileSet.CellNeighbor.BottomSide, TileSet.CellNeighbor.RightSide };
+    //    return directs.ToDictionary(x => x, x => GetNeighborCell(index, x));
+    //}
 }
 
 public static class TileMapExtension
 {
-    public static Dictionary<TileSet.CellNeighbor, Vector2I> GetNeighborCells(this TileMap tilemap, Vector2I index)
+    public static Dictionary<TileSet.CellNeighbor, Vector2I> GetNeighborCells_8(this TileMap tilemap, Vector2I index)
     {
         //var dict = Enum.GetValues<TileSet.CellNeighbor>().ToDictionary(x => x, x => tilemap.GetNeighborCell(Vector2I.Zero, x));
-        var directs = new[] { 
-            TileSet.CellNeighbor.TopSide, 
-            TileSet.CellNeighbor.TopLeftCorner, 
-            TileSet.CellNeighbor.LeftSide, 
-            TileSet.CellNeighbor.BottomLeftCorner, 
+        var directs = new[] {
+            TileSet.CellNeighbor.TopSide,
+            TileSet.CellNeighbor.TopLeftCorner,
+            TileSet.CellNeighbor.LeftSide,
+            TileSet.CellNeighbor.BottomLeftCorner,
             TileSet.CellNeighbor.BottomSide,
             TileSet.CellNeighbor.BottomRightCorner,
             TileSet.CellNeighbor.RightSide,
             TileSet.CellNeighbor.TopRightCorner,};
         return directs.ToDictionary(x => x, x => tilemap.GetNeighborCell(index, x));
     }
+
+    public static Dictionary<TileSet.CellNeighbor, Vector2I> GetNeighborCells_4(this TileMap tilemap, Vector2I index)
+    {
+        //var dict = Enum.GetValues<TileSet.CellNeighbor>().ToDictionary(x => x, x => tilemap.GetNeighborCell(Vector2I.Zero, x));
+        var directs = new[] {
+            TileSet.CellNeighbor.TopSide,
+            TileSet.CellNeighbor.LeftSide,
+            TileSet.CellNeighbor.BottomSide,
+            TileSet.CellNeighbor.RightSide,
+        };
+        return directs.ToDictionary(x => x, x => tilemap.GetNeighborCell(index, x));
+    }
+
 }
