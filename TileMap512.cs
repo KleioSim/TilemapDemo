@@ -1,11 +1,14 @@
-using Godot;
+﻿using Godot;
 using System;
 using System.Linq;
 
 public partial class TileMap512 : TileMap
 {
+    private Random random;
+
     internal void GenerateMap(TileMap baseMap)
     {
+        random = new Random();
         FullFillByBase(baseMap);
     }
 
@@ -20,15 +23,44 @@ public partial class TileMap512 : TileMap
             {
                 for (int y = index.Y * n; y < (index.Y + 1) * n; y++)
                 {
-                    SetCell(0, new Vector2I(x, y), id, new Vector2I(0, 0), 0);
+                    SetCell(0, new Vector2I(x, y), SwitchTerrain(id), new Vector2I(0, 0), 0);
                 }
             }
         }
 
-        var newLandCells = GetUsedCellsById(0,3).Where(cell => this.GetNeighborCells(cell).Values.Any(neighbor=> GetCellSourceId(0,neighbor) is not 3 and not -1)).ToArray();
+        var newLandCells = GetUsedCellsById(0, 3).Where(cell => this.GetNeighborCells_8(cell).Values.Any(neighbor => GetCellSourceId(0, neighbor) is not 3 and not -1)).ToArray();
         foreach (var index in newLandCells)
         {
             SetCell(0, index, 0, new Vector2I(0, 0), 0);
+        }
+    }
+
+    private int SwitchTerrain(int id)
+    {
+        switch (id)
+        {
+            case 2:
+                {
+                    var ret = id;
+                    var randomValuw = random.Next(0, 100);
+                    if (randomValuw * 100 / 100 <= 20)
+                    {
+                        ret = 0;
+                    }
+                    return ret;
+                }
+            case 0:
+                {
+                    var ret = id;
+                    var randomValuw = random.Next(0, 100);
+                    if (randomValuw * 100 / 100 <= 20)
+                    {
+                        ret = 2;
+                    }
+                    return ret;
+                }
+            default:
+                return id;
         }
     }
 }

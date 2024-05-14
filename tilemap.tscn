@@ -118,6 +118,7 @@ offset = Vector2(500, 500)
 zoom = Vector2(0.03, 0.03)
 
 [node name="TileMap2048" type="TileMap" parent="CanvasLayer2"]
+visible = false
 modulate = Color(1, 1, 1, 0.0392157)
 tile_set = ExtResource("5_qd75u")
 format = 2
@@ -125,11 +126,13 @@ layer_0/tile_data = PackedInt32Array(0, 3, 0)
 script = ExtResource("3_q1n20")
 
 [node name="TileMap1024" type="TileMap" parent="CanvasLayer2"]
+visible = false
 tile_set = SubResource("TileSet_cs8ai")
 format = 2
 script = ExtResource("6_ijyi0")
 
 [node name="TileMap512" type="TileMap" parent="CanvasLayer2"]
+visible = false
 modulate = Color(1, 1, 1, 0.0392157)
 tile_set = ExtResource("6_3618c")
 format = 2
@@ -137,7 +140,7 @@ layer_0/tile_data = PackedInt32Array(0, 3, 0)
 script = ExtResource("7_4ht1w")
 
 [node name="TileMap128" type="TileMap" parent="CanvasLayer2"]
-modulate = Color(1, 1, 1, 0.392157)
+modulate = Color(1, 1, 1, 0.0392157)
 tile_set = SubResource("TileSet_rb4lt")
 format = 2
 layer_0/tile_data = PackedInt32Array(0, 3, 0)
