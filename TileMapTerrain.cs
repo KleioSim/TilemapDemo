@@ -120,8 +120,9 @@ public partial class TileMapTerrain : TileMap
 
             foreach (var index in eraseIndexs)
             {
+                var id = this.GetNeighborCells_4(index).Values.Select(neighbor => GetCellSourceId(0, neighbor)).First(x => x != 2);
                 edgeIndex2Factor.Remove(index);
-                SetCell(0, index, 0, Vector2I.Zero, 0);
+                SetCell(0, index, id, Vector2I.Zero, 0);
                 eraserCount++;
             }
 
