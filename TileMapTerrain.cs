@@ -41,7 +41,7 @@ public partial class TileMapTerrain : TileMap
         var eraserCount = 0;
         var gCount = GetUsedCellsById(0, 2).Count();
         int turn = 1;
-        while (eraserCount * 100 / gCount <50)
+        while (eraserCount * 100 / gCount < 50)
         {
             var eraseIndexs = new HashSet<Vector2I>();
             foreach (var index in edgeIndex2Factor.Keys)
@@ -99,7 +99,7 @@ public partial class TileMapTerrain : TileMap
             .Where(index =>
         {
             var neighborDict = this.GetNeighborCells_4(index);
-            return neighborDict.Values.Any(neighbor =>  GetCellSourceId(0, neighbor) != 2);
+            return neighborDict.Values.Any(neighbor => GetCellSourceId(0, neighbor) != 2);
         }).ToDictionary(x => x, _ => 1);
 
         var eraserCount = 0;
@@ -162,7 +162,7 @@ public partial class TileMapTerrain : TileMap
         while (selected.Count < bCellIndexs.Count * 0.15)
         {
             var index = bCellIndexs[random.Next(0, bCellIndexs.Count)];
-            if(index.X == 0 || index.X == maxValue)
+            if (index.X == 0 || index.X == maxValue)
             {
                 continue;
             }
@@ -201,7 +201,7 @@ public partial class TileMapTerrain : TileMap
             }
         }
 
-        for (int i = 0; i < removedIndexs.Count()/2; i++)
+        for (int i = 0; i < removedIndexs.Count() / 2; i++)
         {
             var index = random.Next(0, orderList.Count() - 1) / random.Next(1, 10);
 
@@ -392,4 +392,9 @@ public static class TileMapExtension
         return directs.ToDictionary(x => x, x => tilemap.GetNeighborCell(index, x));
     }
 
+
+    public static IEnumerable<Vector2I> GetNeighbor4CellsById(this TileMap tilemap, Vector2I index, int id)
+    {
+        return tilemap.GetNeighborCells_4(index).Values.Where(x => tilemap.GetCellSourceId(0, x) == id);
+    }
 }
