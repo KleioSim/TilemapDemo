@@ -1,8 +1,6 @@
-[gd_scene load_steps=22 format=3 uid="uid://dt82a71estys7"]
+[gd_scene load_steps=20 format=3 uid="uid://dt82a71estys7"]
 
 [ext_resource type="Script" path="res://TilemapTest.cs" id="1_bdrlg"]
-[ext_resource type="TileSet" uid="uid://c3muid5b4cxhs" path="res://tiesets1024.tres" id="1_wj3ft"]
-[ext_resource type="TileSet" uid="uid://dtovgdf6kws51" path="res://tilesets16.tres" id="2_rvedg"]
 [ext_resource type="Script" path="res://TileMapBase.cs" id="3_q1n20"]
 [ext_resource type="Script" path="res://TileMapTerrain.cs" id="5_gxg0y"]
 [ext_resource type="TileSet" uid="uid://dwhqpsv6ahtbf" path="res://tilemap2048.tres" id="5_qd75u"]
@@ -14,7 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://0oqr0l0ci8wr" path="res://1024/purple1024.png" id="8_h1ix5"]
 [ext_resource type="Texture2D" uid="uid://eqdddey8l1qi" path="res://1024/blue1024.png" id="9_7s0yg"]
 [ext_resource type="Texture2D" uid="uid://bfnr18b5uh4w" path="res://1024/brown1024.png" id="10_l55vo"]
-[ext_resource type="TileSet" uid="uid://cier67rictop7" path="res://tilesets128_2.tres" id="14_tg84x"]
+[ext_resource type="TileSet" uid="uid://x1bow5j3rxiy" path="res://tilesets128_2.tres" id="14_tg84x"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_eubj3"]
 texture = ExtResource("6_8gg33")
@@ -69,20 +67,6 @@ text = "99999"
 [node name="CanvasLayer2" type="CanvasLayer" parent="."]
 follow_viewport_enabled = true
 
-[node name="TileMapBase" type="TileMap" parent="CanvasLayer2"]
-visible = false
-modulate = Color(1, 1, 1, 0.0392157)
-tile_set = ExtResource("1_wj3ft")
-format = 2
-layer_0/tile_data = PackedInt32Array(0, 3, 0, 1, 0, 0)
-
-[node name="TileMapTerrain" type="TileMap" parent="CanvasLayer2"]
-visible = false
-modulate = Color(1, 1, 1, 0.0392157)
-tile_set = ExtResource("2_rvedg")
-format = 2
-layer_0/tile_data = PackedInt32Array(0, 0, 0, 1, 1, 0, 2, 2, 0)
-
 [node name="Camera2D" type="Camera2D" parent="CanvasLayer2"]
 offset = Vector2(500, 500)
 zoom = Vector2(0.03, 0.03)
@@ -110,6 +94,14 @@ layer_0/tile_data = PackedInt32Array(0, 3, 0)
 script = ExtResource("7_4ht1w")
 
 [node name="TileMap128" type="TileMap" parent="CanvasLayer2"]
+visible = false
+tile_set = ExtResource("14_tg84x")
+format = 2
+layer_0/tile_data = PackedInt32Array(0, 3, 0)
+script = ExtResource("5_gxg0y")
+
+[node name="TileMapTerrain" type="TileMap" parent="CanvasLayer2"]
+modulate = Color(1, 1, 1, 0.0392157)
 tile_set = ExtResource("14_tg84x")
 format = 2
 layer_0/tile_data = PackedInt32Array(0, 3, 0)
