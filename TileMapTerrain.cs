@@ -281,7 +281,8 @@ public partial class TileMapTerrain : TileMap
                     continue;
                 }
 
-                if (random.Next(0, 10000) <= 3000 / factor)
+                var factor2 = this.GetNeighborCells_8(index).Values.Where(x => GetCellSourceId(0, x) != 3).Count();
+                if (factor2 == 0 || random.Next(0, 10000) <= 3000 / factor2)
                 {
                     edgeIndexs.Remove(index);
                     SetCell(0, index, 3, Vector2I.Zero, 0);
