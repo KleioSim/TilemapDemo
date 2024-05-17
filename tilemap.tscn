@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://dt82a71estys7"]
+[gd_scene load_steps=21 format=3 uid="uid://dt82a71estys7"]
 
 [ext_resource type="Script" path="res://TilemapTest.cs" id="1_bdrlg"]
 [ext_resource type="Script" path="res://TileMapBase.cs" id="3_q1n20"]
@@ -12,6 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://0oqr0l0ci8wr" path="res://1024/purple1024.png" id="8_h1ix5"]
 [ext_resource type="Texture2D" uid="uid://eqdddey8l1qi" path="res://1024/blue1024.png" id="9_7s0yg"]
 [ext_resource type="Texture2D" uid="uid://bfnr18b5uh4w" path="res://1024/brown1024.png" id="10_l55vo"]
+[ext_resource type="Script" path="res://TileMapAuto.cs" id="14_58q0x"]
 [ext_resource type="TileSet" uid="uid://x1bow5j3rxiy" path="res://tilesets128_2.tres" id="14_tg84x"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_eubj3"]
@@ -101,8 +102,16 @@ layer_0/tile_data = PackedInt32Array(0, 3, 0)
 script = ExtResource("5_gxg0y")
 
 [node name="TileMapTerrain" type="TileMap" parent="CanvasLayer2"]
-modulate = Color(1, 1, 1, 0.0392157)
+modulate = Color(1, 1, 1, 0.196078)
 tile_set = ExtResource("14_tg84x")
 format = 2
 layer_0/tile_data = PackedInt32Array(0, 3, 0)
 script = ExtResource("5_gxg0y")
+
+[node name="TilemapAuto" type="TileMap" parent="CanvasLayer2"]
+visible = false
+modulate = Color(1, 1, 1, 0.117647)
+tile_set = ExtResource("14_tg84x")
+format = 2
+layer_0/tile_data = PackedInt32Array(0, 3, 0)
+script = ExtResource("14_58q0x")

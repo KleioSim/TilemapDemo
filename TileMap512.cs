@@ -10,14 +10,16 @@ public partial class TileMap512 : TileMap
 
     internal void GenerateMap(TileMap baseMap, Vector2I bpoint)
     {
-        bpoint = bpoint * GetUsedCells(0).Select(x => x.X).Max();
+
 
         random = new Random();
 
         FullFillByBase(baseMap);
+        bpoint = bpoint * GetUsedCells(0).Select(x => x.X).Max();
+
         AddGPoint2LandEdge(bpoint);
-        RandomConvert2P();
-        RandomConvert2Y();
+        //RandomConvert2P();
+        //RandomConvert2Y();
     }
 
     private void AddGPoint2LandEdge(Vector2I bpoint)

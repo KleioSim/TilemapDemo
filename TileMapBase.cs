@@ -86,6 +86,6 @@ public partial class TileMapBase : TileMap
             }
         }
 
-        return bpoint/(maxSize-1);
+        return bpoint / (maxSize - 1);
     }
 }

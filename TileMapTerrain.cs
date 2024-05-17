@@ -11,14 +11,22 @@ public partial class TileMapTerrain : TileMap
     {
         random = new Random();
 
+
         FullFillByBase(baseMap);
 
+        //BuildLandEdge2();
+
         BuildLandEdge(bpoint);
-        BuildMountions();
-        BuildHills();
+        //BuildMountions();
+        //BuildHills();
 
         var indexs = GetUsedCells(0);
         GD.Print($"total cell count{indexs.Count()}, water cell count {indexs.Count(x => GetCellSourceId(0, x) == 3)}");
+    }
+
+    private void BuildLandEdge2()
+    {
+        throw new NotImplementedException();
     }
 
     private void BuildHills()
@@ -185,9 +193,9 @@ public partial class TileMapTerrain : TileMap
     {
         var egdeIndexs = FlushLandEdge();
 
-        var removedIndexs = RemoveSmallLandBlock();
+        //var removedIndexs = RemoveSmallLandBlock();
 
-        FixLandEdge(egdeIndexs.Except(removedIndexs), removedIndexs, bpoint * GetUsedCells(0).Select(x => x.X).Max());
+        //FixLandEdge(egdeIndexs.Except(removedIndexs), removedIndexs, bpoint * GetUsedCells(0).Select(x => x.X).Max());
     }
 
     private void FixLandEdge(IEnumerable<Vector2I> edgeIndexs, IEnumerable<Vector2I> removedIndexs, Vector2I bpoint)
@@ -235,59 +243,128 @@ public partial class TileMapTerrain : TileMap
 
     private IEnumerable<Vector2I> FlushLandEdge()
     {
-        var edgeIndex2Factor = GetUsedCells(0).Where(index =>
+        Dictionary<Vector2I, int> edgeIndexs = GetUsedCells(0).Where(index =>
         {
-            int id = GetCellSourceId(0, index);
-            if (id == 3)
+            if (GetCellSourceId(0, index) == 3)
             {
                 return false;
             }
 
             var neighborDict = this.GetNeighborCells_4(index);
-            return neighborDict.Values.Any(x => GetCellSourceId(0, x) == 3);
-        }).ToDictionary(x => x, _ => 1);
-
-        var eraserCount = 0;
-        var gCount = GetUsedCells(0).Where(x => GetCellSourceId(0, x) != 3).Count();
-        int turn = 1;
-        while (eraserCount * 100 / gCount < 30)
-        {
-            var eraseIndexs = new HashSet<Vector2I>();
-            foreach (var index in edgeIndex2Factor.Keys)
+            if (neighborDict.Values.All(x => GetCellSourceId(0, x) != 3))
             {
-                var factor = edgeIndex2Factor[index];
+                return false;
+            }
 
-                if (random.Next(0, 1000) <= 300 / factor)
+            if (IsConnectNode(index))
+            {
+                return false;
+            }
+
+            return true;
+
+        }).ToDictionary(k => k, v => 1); ;
+
+        int eraseCount = 0;
+        var gCount = GetUsedCells(0).Where(x => GetCellSourceId(0, x) != 3).Count();
+        while (eraseCount * 100 / gCount < 30)
+        {
+            var eraserIndexs = new List<Vector2I>();
+
+            foreach (var index in edgeIndexs.Keys.ToArray())
+            {
+                var factor = edgeIndexs[index];
+
+                if (IsConnectNode(index))
                 {
-                    eraseIndexs.Add(index);
+                    edgeIndexs.Remove(index);
+                    continue;
+                }
+
+                if (random.Next(0, 10000) <= 3000 / factor)
+                {
+                    edgeIndexs.Remove(index);
+                    SetCell(0, index, 3, Vector2I.Zero, 0);
+                    eraseCount++;
+                    eraserIndexs.Add(index);
+                }
+
+            }
+
+            foreach (var key in edgeIndexs.Keys)
+            {
+                edgeIndexs[key] *= 2;
+                if (edgeIndexs[key] > 3000)
+                {
+                    edgeIndexs[key] = 3000;
                 }
             }
 
-            foreach (var index in eraseIndexs)
-            {
-                edgeIndex2Factor.Remove(index);
-                SetCell(0, index, 3, Vector2I.Zero, 0);
-                eraserCount++;
-            }
-
-            foreach (var key in edgeIndex2Factor.Keys)
-            {
-                edgeIndex2Factor[key] *= 3;
-            }
-
-            foreach (var index in eraseIndexs)
+            foreach (var index in eraserIndexs)
             {
                 var neighbors = this.GetNeighborCells_4(index).Values.Where(x => GetCellSourceId(0, x) != -1 && GetCellSourceId(0, x) != 3);
                 foreach (var neighbor in neighbors)
                 {
-                    edgeIndex2Factor.TryAdd(neighbor, 1);
+                    edgeIndexs.TryAdd(neighbor, 1);
                 }
             }
 
-            turn++;
+            //edgeIndexs =
+
+            //var array = edgeIndexs.OrderBy(x => x.Value).ToArray();
+            //var randomValue = random.Next(0, array.Length) / random.Next(1, 10);
+            //SetCell(0, array[randomValue].Key, 3, Vector2I.Zero, 0);
+            //eraseCount++;
+
         }
 
-        return edgeIndex2Factor.Keys;
+        return null;
+
+        //var eraserCount = 0;
+        //var gCount = GetUsedCells(0).Where(x => GetCellSourceId(0, x) != 3).Count();
+        //while (eraserCount * 100 / gCount < 30)
+        //{
+        //    var eraseIndexs = new HashSet<Vector2I>();
+        //    foreach (var index in edgeIndex2Factor.Keys)
+        //    {
+        //        var factor = edgeIndex2Factor[index];
+
+        //        if (IsConnectNode(index))
+        //        {
+        //            continue;
+        //        }
+
+        //        //var factor2 = this.GetNeighbor4CellsById(index, 3).Count();
+        //        //if (random.Next(0, 1000) <= 300 * factor2)
+        //        if (random.Next(0, 1000) <= 500)
+        //        {
+        //            eraseIndexs.Add(index);
+        //        }
+        //    }
+
+        //    foreach (var index in eraseIndexs)
+        //    {
+        //        edgeIndex2Factor.Remove(index);
+        //        SetCell(0, index, 3, Vector2I.Zero, 0);
+        //        eraserCount++;
+        //    }
+
+        //    foreach (var key in edgeIndex2Factor.Keys)
+        //    {
+        //        edgeIndex2Factor[key] += 1;
+        //    }
+
+        //    foreach (var index in eraseIndexs)
+        //    {
+        //        var neighbors = this.GetNeighborCells_4(index).Values.Where(x => GetCellSourceId(0, x) != -1 && GetCellSourceId(0, x) != 3);
+        //        foreach (var neighbor in neighbors)
+        //        {
+        //            edgeIndex2Factor.TryAdd(neighbor, 1);
+        //        }
+        //    }
+        //}
+
+        //return edgeIndex2Factor.Keys;
     }
 
     private void FullFillByBase(TileMap baseMap)
@@ -357,11 +434,94 @@ public partial class TileMapTerrain : TileMap
         return needRemoveIndexs;
     }
 
-    //private Dictionary<TileSet.CellNeighbor, Vector2I> GetNeighborCells(Vector2I index)
-    //{
-    //    var directs = new[] { TileSet.CellNeighbor.TopSide, TileSet.CellNeighbor.LeftSide, TileSet.CellNeighbor.BottomSide, TileSet.CellNeighbor.RightSide };
-    //    return directs.ToDictionary(x => x, x => GetNeighborCell(index, x));
-    //}
+
+    private bool IsConnectNode(Vector2I index)
+    {
+        var neighbors = this.GetNeighborCells_8(index);
+
+        if (GetCellSourceId(0, neighbors[TileSet.CellNeighbor.LeftSide]) != 3 && GetCellSourceId(0, neighbors[TileSet.CellNeighbor.RightSide]) != 3
+            && GetCellSourceId(0, neighbors[TileSet.CellNeighbor.BottomSide]) == 3 && GetCellSourceId(0, neighbors[TileSet.CellNeighbor.TopSide]) == 3)
+        {
+            return true;
+        }
+        if (GetCellSourceId(0, neighbors[TileSet.CellNeighbor.LeftSide]) == 3 && GetCellSourceId(0, neighbors[TileSet.CellNeighbor.RightSide]) == 3
+            && GetCellSourceId(0, neighbors[TileSet.CellNeighbor.BottomSide]) != 3 && GetCellSourceId(0, neighbors[TileSet.CellNeighbor.TopSide]) != 3)
+        {
+            return true;
+        }
+        if (GetCellSourceId(0, neighbors[TileSet.CellNeighbor.LeftSide]) != 3 && GetCellSourceId(0, neighbors[TileSet.CellNeighbor.BottomSide]) != 3
+            && GetCellSourceId(0, neighbors[TileSet.CellNeighbor.BottomLeftCorner]) == 3)
+        {
+            return true;
+        }
+        if (GetCellSourceId(0, neighbors[TileSet.CellNeighbor.LeftSide]) != 3 && GetCellSourceId(0, neighbors[TileSet.CellNeighbor.TopSide]) != 3
+            && GetCellSourceId(0, neighbors[TileSet.CellNeighbor.TopLeftCorner]) == 3)
+        {
+            return true;
+        }
+        if (GetCellSourceId(0, neighbors[TileSet.CellNeighbor.RightSide]) != 3 && GetCellSourceId(0, neighbors[TileSet.CellNeighbor.BottomSide]) != 3
+            && GetCellSourceId(0, neighbors[TileSet.CellNeighbor.BottomRightCorner]) == 3)
+        {
+            return true;
+        }
+        if (GetCellSourceId(0, neighbors[TileSet.CellNeighbor.RightSide]) != 3 && GetCellSourceId(0, neighbors[TileSet.CellNeighbor.TopSide]) != 3
+            && GetCellSourceId(0, neighbors[TileSet.CellNeighbor.TopRightCorner]) == 3)
+        {
+            return true;
+        }
+        return false;
+        //if (GetCellSourceId(0, neighbors[TileSet.CellNeighbor.LeftSide]) != 3 && GetCellSourceId(0, neighbors[TileSet.CellNeighbor.RightSide]) != 3)
+        //{
+        //    if (GetCellSourceId(0, neighbors[TileSet.CellNeighbor.TopSide]) == 3)
+        //    {
+        //        if (GetCellSourceId(0, neighbors[TileSet.CellNeighbor.BottomRightCorner]) == 3
+        //            || GetCellSourceId(0, neighbors[TileSet.CellNeighbor.BottomSide]) == 3
+        //            || GetCellSourceId(0, neighbors[TileSet.CellNeighbor.BottomLeftCorner]) == 3)
+        //        {
+        //            return true;
+        //        }
+        //    }
+
+        //    if (GetCellSourceId(0, neighbors[TileSet.CellNeighbor.BottomSide]) == 3)
+        //    {
+        //        if (GetCellSourceId(0, neighbors[TileSet.CellNeighbor.TopRightCorner]) == 3
+        //            || GetCellSourceId(0, neighbors[TileSet.CellNeighbor.TopSide]) == 3
+        //            || GetCellSourceId(0, neighbors[TileSet.CellNeighbor.TopLeftCorner]) == 3)
+        //        {
+        //            return true;
+        //        }
+        //    }
+        //}
+
+        //if (GetCellSourceId(0, neighbors[TileSet.CellNeighbor.BottomSide]) != 3 && GetCellSourceId(0, neighbors[TileSet.CellNeighbor.TopSide]) != 3)
+        //{
+        //    if (GetCellSourceId(0, neighbors[TileSet.CellNeighbor.LeftSide]) == 3)
+        //    {
+        //        if (GetCellSourceId(0, neighbors[TileSet.CellNeighbor.BottomRightCorner]) == 3
+        //            || GetCellSourceId(0, neighbors[TileSet.CellNeighbor.RightSide]) == 3
+        //            || GetCellSourceId(0, neighbors[TileSet.CellNeighbor.TopRightCorner]) == 3)
+        //        {
+        //            return true;
+        //        }
+        //    }
+        //    if (GetCellSourceId(0, neighbors[TileSet.CellNeighbor.RightSide]) == 3)
+        //    {
+        //        if (GetCellSourceId(0, neighbors[TileSet.CellNeighbor.BottomLeftCorner]) == 3
+        //            || GetCellSourceId(0, neighbors[TileSet.CellNeighbor.LeftSide]) == 3
+        //            || GetCellSourceId(0, neighbors[TileSet.CellNeighbor.TopLeftCorner]) == 3)
+        //        {
+        //            return true;
+        //        }
+        //    }
+        //}
+
+        //if (GetCellSourceId(0, neighbors[TileSet.CellNeighbor.TopLeftCorner]) == 3 && GetCellSourceId(0, neighbors[TileSet.CellNeighbor.BottomRightCorner]) == 3
+        //    && GetCellSourceId(0, neighbors[TileSet.CellNeighbor.TopRightCorner]) == 3 && GetCellSourceId(0, neighbors[TileSet.CellNeighbor.BottomLeftCorner]) == 3)
+        //{
+        //    return true;
+        //}
+        //return false;
+    }
 }
 
 public static class TileMapExtension
