@@ -1,52 +1,12 @@
-[gd_scene load_steps=21 format=3 uid="uid://dt82a71estys7"]
+[gd_scene load_steps=8 format=3 uid="uid://dt82a71estys7"]
 
 [ext_resource type="Script" path="res://TilemapTest.cs" id="1_bdrlg"]
 [ext_resource type="Script" path="res://TileMapBase.cs" id="3_q1n20"]
 [ext_resource type="Script" path="res://TileMapTerrain.cs" id="5_gxg0y"]
 [ext_resource type="TileSet" uid="uid://dwhqpsv6ahtbf" path="res://tilemap2048.tres" id="5_qd75u"]
-[ext_resource type="Texture2D" uid="uid://ce3hxwgjg3g40" path="res://1024/green1024.png" id="6_8gg33"]
 [ext_resource type="TileSet" uid="uid://b6p2r7rdmqkfp" path="res://tiesets512.tres" id="6_3618c"]
-[ext_resource type="Script" path="res://TileMap1024.cs" id="6_ijyi0"]
 [ext_resource type="Script" path="res://TileMap512.cs" id="7_4ht1w"]
-[ext_resource type="Texture2D" uid="uid://bgvicvaow2a4" path="res://1024/yellow1024.png" id="7_70hlr"]
-[ext_resource type="Texture2D" uid="uid://0oqr0l0ci8wr" path="res://1024/purple1024.png" id="8_h1ix5"]
-[ext_resource type="Texture2D" uid="uid://eqdddey8l1qi" path="res://1024/blue1024.png" id="9_7s0yg"]
-[ext_resource type="Texture2D" uid="uid://bfnr18b5uh4w" path="res://1024/brown1024.png" id="10_l55vo"]
-[ext_resource type="Script" path="res://TileMapAuto.cs" id="14_58q0x"]
 [ext_resource type="TileSet" uid="uid://x1bow5j3rxiy" path="res://tilesets128_2.tres" id="14_tg84x"]
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_eubj3"]
-texture = ExtResource("6_8gg33")
-texture_region_size = Vector2i(1024, 1024)
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5wwch"]
-texture = ExtResource("7_70hlr")
-texture_region_size = Vector2i(1024, 1024)
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3tswe"]
-texture = ExtResource("8_h1ix5")
-texture_region_size = Vector2i(1024, 1024)
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_88hw0"]
-texture = ExtResource("9_7s0yg")
-texture_region_size = Vector2i(1024, 1024)
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0q577"]
-texture = ExtResource("10_l55vo")
-texture_region_size = Vector2i(1024, 1024)
-0:0/0 = 0
-
-[sub_resource type="TileSet" id="TileSet_cs8ai"]
-tile_size = Vector2i(1024, 1024)
-sources/0 = SubResource("TileSetAtlasSource_eubj3")
-sources/1 = SubResource("TileSetAtlasSource_5wwch")
-sources/2 = SubResource("TileSetAtlasSource_3tswe")
-sources/3 = SubResource("TileSetAtlasSource_88hw0")
-sources/4 = SubResource("TileSetAtlasSource_0q577")
 
 [node name="Test2" type="Control"]
 layout_mode = 3
@@ -80,12 +40,6 @@ format = 2
 layer_0/tile_data = PackedInt32Array(0, 3, 0)
 script = ExtResource("3_q1n20")
 
-[node name="TileMap1024" type="TileMap" parent="CanvasLayer2"]
-visible = false
-tile_set = SubResource("TileSet_cs8ai")
-format = 2
-script = ExtResource("6_ijyi0")
-
 [node name="TileMap512" type="TileMap" parent="CanvasLayer2"]
 visible = false
 modulate = Color(1, 1, 1, 0.0392157)
@@ -94,24 +48,9 @@ format = 2
 layer_0/tile_data = PackedInt32Array(0, 3, 0)
 script = ExtResource("7_4ht1w")
 
-[node name="TileMap128" type="TileMap" parent="CanvasLayer2"]
-visible = false
-tile_set = ExtResource("14_tg84x")
-format = 2
-layer_0/tile_data = PackedInt32Array(0, 3, 0)
-script = ExtResource("5_gxg0y")
-
 [node name="TileMapTerrain" type="TileMap" parent="CanvasLayer2"]
 modulate = Color(1, 1, 1, 0.196078)
 tile_set = ExtResource("14_tg84x")
 format = 2
 layer_0/tile_data = PackedInt32Array(0, 3, 0)
 script = ExtResource("5_gxg0y")
-
-[node name="TilemapAuto" type="TileMap" parent="CanvasLayer2"]
-visible = false
-modulate = Color(1, 1, 1, 0.117647)
-tile_set = ExtResource("14_tg84x")
-format = 2
-layer_0/tile_data = PackedInt32Array(0, 3, 0)
-script = ExtResource("14_58q0x")
