@@ -1,10 +1,10 @@
 [gd_scene load_steps=7 format=3 uid="uid://6p7st44c6efe"]
 
 [ext_resource type="Script" path="res://TilemapTest2.cs" id="1_8ij4a"]
-[ext_resource type="TileSet" uid="uid://dwhqpsv6ahtbf" path="res://tilemap2048.tres" id="2_wksrr"]
+[ext_resource type="TileSet" uid="uid://dwhqpsv6ahtbf" path="res://TileMap/tilemap2048.tres" id="2_wksrr"]
 [ext_resource type="Script" path="res://TileMapFractal.cs" id="3_khmqs"]
-[ext_resource type="Script" path="res://TileMapTerrain.cs" id="7_p0nw8"]
-[ext_resource type="TileSet" uid="uid://b6p2r7rdmqkfp" path="res://tiesets512.tres" id="10_6y5p3"]
+[ext_resource type="Script" path="res://TileMap/TileMapTerrain.cs" id="7_p0nw8"]
+[ext_resource type="TileSet" uid="uid://b6p2r7rdmqkfp" path="res://TileMap/tiesets512.tres" id="10_6y5p3"]
 [ext_resource type="TileSet" uid="uid://x1bow5j3rxiy" path="res://tilesets128_2.tres" id="12_hujdy"]
 
 [node name="Test2" type="Control"]

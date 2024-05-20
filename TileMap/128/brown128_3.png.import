@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cknu3hnr17xp2"
-path="res://.godot/imported/brown2048.png-e9612b7e8994185fd41a24f5a0cbbea8.ctex"
+uid="uid://cdf7aunbm5o7v"
+path="res://.godot/imported/brown128_3.png-2de302ef240de71b0d2b07f563481656.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://2048/brown2048.png"
-dest_files=["res://.godot/imported/brown2048.png-e9612b7e8994185fd41a24f5a0cbbea8.ctex"]
+source_file="res://TileMap/128/brown128_3.png"
+dest_files=["res://.godot/imported/brown128_3.png-2de302ef240de71b0d2b07f563481656.ctex"]
 
 [params]
 

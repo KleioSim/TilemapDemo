@@ -1,11 +1,11 @@
 [gd_scene load_steps=8 format=3 uid="uid://dt82a71estys7"]
 
-[ext_resource type="Script" path="res://TilemapTest.cs" id="1_bdrlg"]
-[ext_resource type="Script" path="res://TileMapBase.cs" id="3_q1n20"]
-[ext_resource type="Script" path="res://TileMapTerrain.cs" id="5_gxg0y"]
-[ext_resource type="TileSet" uid="uid://dwhqpsv6ahtbf" path="res://tilemap2048.tres" id="5_qd75u"]
-[ext_resource type="TileSet" uid="uid://b6p2r7rdmqkfp" path="res://tiesets512.tres" id="6_3618c"]
-[ext_resource type="Script" path="res://TileMap512.cs" id="7_4ht1w"]
+[ext_resource type="Script" path="res://TileMap/TilemapTest.cs" id="1_bdrlg"]
+[ext_resource type="Script" path="res://TileMap/TileMapBase.cs" id="3_q1n20"]
+[ext_resource type="Script" path="res://TileMap/TileMapTerrain.cs" id="5_gxg0y"]
+[ext_resource type="TileSet" uid="uid://dwhqpsv6ahtbf" path="res://TileMap/tilemap2048.tres" id="5_qd75u"]
+[ext_resource type="TileSet" uid="uid://b6p2r7rdmqkfp" path="res://TileMap/tiesets512.tres" id="6_3618c"]
+[ext_resource type="Script" path="res://TileMap/TileMap512.cs" id="7_4ht1w"]
 [ext_resource type="TileSet" uid="uid://x1bow5j3rxiy" path="res://tilesets128_2.tres" id="14_tg84x"]
 
 [node name="Test2" type="Control"]

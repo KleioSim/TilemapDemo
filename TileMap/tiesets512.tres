@@ -1,10 +1,10 @@
 [gd_resource type="TileSet" load_steps=11 format=3 uid="uid://b6p2r7rdmqkfp"]
 
-[ext_resource type="Texture2D" uid="uid://bthrncitiur5j" path="res://512/green512.png" id="1_pgves"]
-[ext_resource type="Texture2D" uid="uid://b8pwirhc5dxx2" path="res://512/yellow512.png" id="2_3tvsl"]
-[ext_resource type="Texture2D" uid="uid://cxxs2yepcceh0" path="res://512/purple512.png" id="3_qu1nf"]
-[ext_resource type="Texture2D" uid="uid://pmudp6raibqk" path="res://512/blue512.png" id="4_ux5l0"]
-[ext_resource type="Texture2D" uid="uid://chah4ix4wsw4o" path="res://512/brown512.png" id="5_5vk0l"]
+[ext_resource type="Texture2D" uid="uid://bthrncitiur5j" path="res://TileMap/512/green512.png" id="1_pgves"]
+[ext_resource type="Texture2D" uid="uid://b8pwirhc5dxx2" path="res://TileMap/512/yellow512.png" id="2_3tvsl"]
+[ext_resource type="Texture2D" uid="uid://cxxs2yepcceh0" path="res://TileMap/512/purple512.png" id="3_qu1nf"]
+[ext_resource type="Texture2D" uid="uid://pmudp6raibqk" path="res://TileMap/512/blue512.png" id="4_ux5l0"]
+[ext_resource type="Texture2D" uid="uid://chah4ix4wsw4o" path="res://TileMap/512/brown512.png" id="5_5vk0l"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_olu2r"]
 texture = ExtResource("1_pgves")

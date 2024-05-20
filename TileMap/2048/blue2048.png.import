@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://eqdddey8l1qi"
-path="res://.godot/imported/blue1024.png-ce1b699f52660c1477aedc4563048018.ctex"
+uid="uid://b4lfhv2weyhoi"
+path="res://.godot/imported/blue2048.png-9bb0d67faedf4313744e964af9034636.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://1024/blue1024.png"
-dest_files=["res://.godot/imported/blue1024.png-ce1b699f52660c1477aedc4563048018.ctex"]
+source_file="res://TileMap/2048/blue2048.png"
+dest_files=["res://.godot/imported/blue2048.png-9bb0d67faedf4313744e964af9034636.ctex"]
 
 [params]
 
